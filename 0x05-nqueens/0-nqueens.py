@@ -1,44 +1,41 @@
 #!/usr/bin/python3
-""" N queens """
 import sys
 
+def print_solution(solution):
+    print([[i, solution[i]] for i in range(len(solution))])
 
-if len(sys.argv) > 2 or len(sys.argv) < 2:
-    print("Usage: nqueens N")
-    exit(1)
+def is_safe(solution, row, col):
+    for i in range(row):
+        if solution[i] == col or \
+           solution[i] - i == col - row or \
+           solution[i] + i == col + row:
+            return False
+    return True
 
-if not sys.argv[1].isdigit():
-    print("N must be a number")
-    exit(1)
+def solve_nqueens(n, row=0, solution=[]):
+    if row == n:
+        print_solution(solution)
+        return
+    for col in range(n):
+        if is_safe(solution, row, col):
+            solution.append(col)
+            solve_nqueens(n, row + 1, solution)
+            solution.pop()
 
-if int(sys.argv[1]) < 4:
-    print("N must be at least 4")
-    exit(1)
+def main():
+    if len(sys.argv) != 2:
+        print("Usage: nqueens N")
+        sys.exit(1)
+    try:
+        n = int(sys.argv[1])
+    except ValueError:
+        print("N must be a number")
+        sys.exit(1)
+    if n < 4:
+        print("N must be at least 4")
+        sys.exit(1)
+    solve_nqueens(n)
 
-n = int(sys.argv[1])
+if __name__ == "__main__":
+    main()
 
-
-def queens(n, i=0, a=[], b=[], c=[]):
-    """ find possible positions """
-    if i < n:
-        for j in range(n):
-            if j not in a and i + j not in b and i - j not in c:
-                yield from queens(n, i + 1, a + [j], b + [i + j], c + [i - j])
-    else:
-        yield a
-
-
-def solve(n):
-    """ solve """
-    k = []
-    i = 0
-    for solution in queens(n, 0):
-        for s in solution:
-            k.append([i, s])
-            i += 1
-        print(k)
-        k = []
-        i = 0
-
-
-solve(n)
