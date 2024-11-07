@@ -1,51 +1,38 @@
 #!/usr/bin/python3
+""" N queens """
 import sys
 
-def print_solution(solution):
-    # Print each solution in the required format: list of [row, col] positions.
-    print([[row, col] for row, col in enumerate(solution)])
+# Validate command-line arguments
+if len(sys.argv) != 2:
+    print("Usage: nqueens N")
+    exit(1)
 
-def is_safe(solution, row, col):
-    # Check if placing a queen at (row, col) is safe
-    for i in range(row):
-        if solution[i] == col or \
-           solution[i] - i == col - row or \
-           solution[i] + i == col + row:
-            return False
-    return True
+if not sys.argv[1].isdigit():
+    print("N must be a number")
+    exit(1)
 
-def solve_nqueens(n, row=0, solution=[]):
-    # Recursive backtracking function to find all solutions
+n = int(sys.argv[1])
+
+if n < 4:
+    print("N must be at least 4")
+    exit(1)
+
+def queens(n, row=0, columns=[], diag1=[], diag2=[]):
+    """ Generate valid queen positions row by row """
     if row == n:
-        print_solution(solution)
-        return
-    for col in range(n):
-        if is_safe(solution, row, col):
-            solution.append(col)
-            solve_nqueens(n, row + 1, solution)
-            solution.pop()
+        yield columns
+    else:
+        for col in range(n):
+            if col not in columns and row + col not in diag1 and row - col not in diag2:
+                # Place queen and proceed to next row
+                yield from queens(n, row + 1, columns + [col], diag1 + [row + col], diag2 + [row - col])
 
-def main():
-    # Check for correct number of command-line arguments
-    if len(sys.argv) != 2:
-        print("Usage: nqueens N")
-        sys.exit(1)
-    
-    # Validate if N is an integer
-    try:
-        n = int(sys.argv[1])
-    except ValueError:
-        print("N must be a number")
-        sys.exit(1)
-    
-    # Check if N is at least 4
-    if n < 4:
-        print("N must be at least 4")
-        sys.exit(1)
-    
-    # Solve the N-Queens puzzle
-    solve_nqueens(n)
+def solve(n):
+    """ Solve and print each solution """
+    for solution in queens(n):
+        # Format each solution to [[row, col], ...] and print it
+        formatted_solution = [[row, col] for row, col in enumerate(solution)]
+        print(formatted_solution)
 
-if __name__ == "__main__":
-    main()
+solve(n)
 
