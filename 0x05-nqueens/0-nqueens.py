@@ -2,9 +2,11 @@
 import sys
 
 def print_solution(solution):
-    print([[i, solution[i]] for i in range(len(solution))])
+    # Print each solution in the required format: list of [row, col] positions.
+    print([[row, col] for row, col in enumerate(solution)])
 
 def is_safe(solution, row, col):
+    # Check if placing a queen at (row, col) is safe
     for i in range(row):
         if solution[i] == col or \
            solution[i] - i == col - row or \
@@ -13,6 +15,7 @@ def is_safe(solution, row, col):
     return True
 
 def solve_nqueens(n, row=0, solution=[]):
+    # Recursive backtracking function to find all solutions
     if row == n:
         print_solution(solution)
         return
@@ -23,17 +26,24 @@ def solve_nqueens(n, row=0, solution=[]):
             solution.pop()
 
 def main():
+    # Check for correct number of command-line arguments
     if len(sys.argv) != 2:
         print("Usage: nqueens N")
         sys.exit(1)
+    
+    # Validate if N is an integer
     try:
         n = int(sys.argv[1])
     except ValueError:
         print("N must be a number")
         sys.exit(1)
+    
+    # Check if N is at least 4
     if n < 4:
         print("N must be at least 4")
         sys.exit(1)
+    
+    # Solve the N-Queens puzzle
     solve_nqueens(n)
 
 if __name__ == "__main__":
